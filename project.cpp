@@ -3,5 +3,5 @@ using namespace std;
 class Node
 {
     cout<<"hello";
-    
+    cout<<"world";
 };
