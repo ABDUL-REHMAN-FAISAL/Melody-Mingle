@@ -92,6 +92,21 @@ private:
     }
 };
 
+//Node Class for linked list
+class ListNode {
+public:
+    Song song;
+    ListNode* next;
+
+    ListNode(Song s) : song(s), next(0) {}
+};
+
+// LinkedList class to manage a list of songs
+
+
+
+
+
 // Graph class to track the user's music journey
 class Graph {
 private:
@@ -132,11 +147,3 @@ public:
     }
 };
 
-//Node Class for linked list
-class ListNode {
-public:
-    Song song;
-    ListNode* next;
-
-    ListNode(Song s) : song(s), next(0) {}
-};
