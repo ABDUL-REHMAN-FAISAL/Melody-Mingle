@@ -184,6 +184,49 @@ public:
     }
 };
 
+// Queue class to manage a queue of songs
+class Queue {
+private:
+    struct QueueNode {
+        Song song;
+        QueueNode* next;
+
+        QueueNode(Song s) : song(s), next(0) {}
+    };
+
+    QueueNode* front;
+    QueueNode* rear;
+
+public:
+    Queue() : front(0), rear(0) {}
+
+    void enqueue(Song song) {
+        QueueNode* newNode = new QueueNode(song);
+        if (rear == 0) {
+            front = rear = newNode;
+        } else {
+            rear->next = newNode;
+            rear = newNode;
+        }
+    }
+
+    Song dequeue() {
+        if (front == 0) {
+            throw runtime_error("Queue is empty");
+        }
+        Song song = front->song;
+        QueueNode* temp = front;
+        front = front->next;
+        delete temp;
+        return song;
+    }
+
+    bool isEmpty() {
+        return front == 0;
+    }
+};
+
+
 
 
 // Graph class to track the user's music journey
