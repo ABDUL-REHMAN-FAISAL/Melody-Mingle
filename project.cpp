@@ -102,7 +102,30 @@ public:
 };
 
 // LinkedList class to manage a list of songs
+class LinkedList {
+private:
+    ListNode* head;
 
+public:
+    LinkedList() : head(0) {}
+
+    void addSong(Song song) {
+        ListNode* newNode = new ListNode(song);
+        newNode->next = head;
+        head = newNode;
+    }
+
+    ListNode* getHead() const {
+        return head; // Provide access to the head node
+    }
+
+    void display() {
+        ListNode* current = head;
+        while (current) {
+            cout << "🎵 " << current->song.title << " by " << current->song.artist << " (Rating: " << current->song.rating << ")\n";
+            current = current->next;
+        }
+    }
 
 
 
