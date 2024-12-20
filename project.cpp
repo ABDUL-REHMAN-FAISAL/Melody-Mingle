@@ -131,3 +131,12 @@ public:
         lastSong.clear();
     }
 };
+
+//Node Class for linked list
+class ListNode {
+public:
+    Song song;
+    ListNode* next;
+
+    ListNode(Song s) : song(s), next(0) {}
+};
