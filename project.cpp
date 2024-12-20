@@ -147,6 +147,44 @@ public:
 
 };
 
+// Stack class to manage a stack of songs
+class Stack {
+private:
+    struct StackNode {
+        Song song;
+        StackNode* next;
+
+        StackNode(Song s) : song(s), next(0) {}
+    };
+
+    StackNode* top;
+
+public:
+    Stack() : top(0) {}
+
+    void push(Song song) {
+        StackNode* newNode = new StackNode(song);
+        newNode->next = top;
+        top = newNode;
+    }
+
+    Song pop() {
+        if (top == 0) {
+            throw runtime_error("Stack is empty");
+        }
+        Song song = top->song;
+        StackNode* temp = top;
+        top = top->next;
+        delete temp;
+        return song;
+    }
+
+    bool isEmpty() {
+        return top == 0;
+    }
+};
+
+
 
 // Graph class to track the user's music journey
 class Graph {
