@@ -127,7 +127,25 @@ public:
         }
     }
 
+    //Bubble sort to sort the link list based on song ratings
+    void bubbleSort(){
+        if(!head) return;
 
+        bool swapped;
+        do{
+            swapped=false;
+            ListNode* current=head;
+            while(current->next){
+                 if (current->song.rating < current->next->song.rating) {
+                 swap(current->song, current->next->song);
+                 swapped = true;
+            }
+            current= current->next;
+        }
+      } while (swapped);
+    }
+
+};
 
 
 // Graph class to track the user's music journey
