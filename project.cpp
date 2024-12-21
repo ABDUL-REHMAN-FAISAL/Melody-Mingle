@@ -264,3 +264,181 @@ public:
     }
 };
 
+// SongList class to manage a linked list of Songs
+class SongList {
+private:
+    LinkedList songs;  // Store songs in a linked list
+    BST songBST;  // Use BST for fast search
+    Graph& userJourneyGraph;
+    Stack recentlyRecommended;  // Stack to keep track of recently recommended songs
+    Queue recommendations;  // Queue to manage the user's song recommendations
+
+public:
+    SongList(Graph& journeyGraph) : userJourneyGraph(journeyGraph) {}
+
+    void addSong(string title, string artist, string vibe, int rating) {
+        Song newSong(title, artist, vibe, rating);
+        songs.addSong(newSong);  // Add song to the linked list
+        songBST.insert(newSong);  // Insert song into the BST
+    }
+
+    // Recommend a random song
+    void recommendSongs(int moodRating) {
+        cout << "\n🎧 Recommended Songs 🎧\n";
+        cout << "-----------------------------------\n";
+
+        int songsRecommended = 0;
+
+        // Make sure that at least 5 songs are recommended (or all available songs if fewer than 5)
+        for (ListNode* current = songs.getHead(); current != 0 && songsRecommended < 5; current = current->next) {
+            if (current->song.rating >= moodRating) {
+                cout << "🎵 " << current->song.title << " by " << current->song.artist << "\n";
+                userJourneyGraph.addSongToJourney(current->song.title);
+                recentlyRecommended.push(current->song);  // Push to stack
+                recommendations.enqueue(current->song);  // Enqueue to queue
+                songsRecommended++;
+            }
+        }
+
+        if (songsRecommended == 0) {
+            cout << "🙁 No songs found matching this mood.\n";
+        }
+
+        cout << "-----------------------------------\n";
+    }
+
+    void searchSong(string query) {
+        cout << "\n🔍 Searching for Songs...\n";
+        cout << "-----------------------------------\n";
+
+        // Convert query to lowercase for case-insensitive comparison
+        for (size_t i = 0; i < query.size(); ++i) {
+            query[i] = tolower(query[i]);
+        }
+
+        bool songFound = false;
+
+        for (ListNode* current = songs.getHead(); current != 0; current = current->next) {
+            string lowerSongTitle = current->song.getLowerTitle();
+
+            // Check if the query is a substring of the song title
+            if (lowerSongTitle.find(query) != string::npos) {
+                cout << "🎵 Found: " << current->song.title << " by " << current->song.artist << "\n";
+                userJourneyGraph.addSongToJourney(current->song.title);
+                songFound = true;
+            }
+        }
+
+        if (!songFound) {
+            cout << "❌ No songs found with the phrase \"" << query << "\".\n";
+        }
+
+        cout << "-----------------------------------\n";
+    }
+
+    void searchArtist(string query) {
+        cout << "\n🔍 Searching for Artists...\n";
+        cout << "-----------------------------------\n";
+        for (ListNode* current = songs.getHead(); current != 0; current = current->next) {
+            if (current->song.artist.find(query) != string::npos) {
+                cout << "🎵 " << current->song.title << " by " << current->song.artist << "\n";
+                userJourneyGraph.addSongToJourney(current->song.title);
+            }
+        }
+        cout << "-----------------------------------\n";
+    }
+
+    void trendingSong() {
+        if (songs.getHead() == 0) {
+            cout << "🙁 No songs available to pick a trending song.\n";
+            return;
+        }
+
+        // Bubble sort the linked list before picking a trending song
+        songs.bubbleSort();
+
+        // The first song in the sorted list is the trending song
+        cout << "\n🎵 Trending Song:\n";
+        cout << "-----------------------------------\n";
+        cout << "🎶 " << songs.getHead()->song.title << " by " << songs.getHead()->song.artist << " (" << songs.getHead()->song.vibe << ")\n";
+        cout << "-----------------------------------\n";
+    }
+
+    void trendingArtist() {
+        if (songs.getHead() == 0) {
+            cout << "🙁 No songs available to calculate trending artists.\n";
+            return;
+        }
+
+        unordered_map<string, int> artistCount;
+        for (ListNode* current = songs.getHead(); current != 0; current = current->next) {
+            artistCount[current->song.artist]++;
+        }
+
+        cout << "\n🎤 Trending Artists:\n";
+        cout << "-----------------------------------\n";
+        int counter = 0;
+        for (unordered_map<string, int>::iterator it = artistCount.begin(); it != artistCount.end() && counter < 3; ++it) {
+            cout << "🎶 " << it->first << " - " << it->second << " song(s) featured\n";
+            counter++;
+        }
+        cout << "-----------------------------------\n";
+    }
+
+    // Function to load songs from a text file
+    void loadSongsFromFile(const string& filename) {
+        ifstream file(filename.c_str());
+        if (!file) {
+            cout << "❌ Could not open the file: " << filename << "\n";
+            return;
+        }
+
+        string title, artist, vibe;
+        int rating;
+        while (getline(file, title, ',')) {
+            getline(file, artist, ',');
+            getline(file, vibe, ',');
+            file >> rating;
+            file.ignore();  // to ignore the newline after the rating
+            addSong(title, artist, vibe, rating);
+        }
+
+        file.close();
+    }
+};
+
+// Function to display a musical trivia fact
+void displayTrivia() {
+    const string trivia[] = {
+        "🎵 The longest song ever recorded is 'The Rise and Fall of Bossanova' by PC III, lasting 13 hours!",
+        "🎵 The Beatles hold the record for the most number-one hits on the Billboard Hot 100, with 20 songs!",
+        "🎵 Michael Jackson's 'Thriller ' remains the best-selling album of all time, with over 66 million copies sold!",
+        "🎵 Beethoven was almost completely deaf when he composed his famous Ninth Symphony.",
+        "🎵 The shortest song ever recorded is 'You Suffer' by Napalm Death, lasting only 1.316 seconds.",
+        "🎵 The highest note ever sung by a human is a G10, achieved by Georgia Brown.",
+        "🎵 Elvis Presley is the best-selling solo music artist of all time.",
+        "🎵 'Bohemian Rhapsody' by Queen has no chorus.",
+        "🎵 Pink Floyd's 'The Dark Side of the Moon' stayed on the Billboard chart for 741 weeks.",
+        "🎵 The first music video played on MTV was 'Video Killed the Radio Star' by The Buggles.",
+        "🎵 Mozart wrote his first symphony at age 8.",
+        "🎵 A piano has 230 strings.",
+        "🎵 The first CD pressed in the U.S. was Bruce Springsteen’s 'Born in the USA.'",
+        "🎵 The fastest rapper is Twista, who can rap 598 syllables in 55 seconds.",
+        "🎵 The world's largest concert attendance was over 3.5 million people for Rod Stewart in 1994."
+    };
+
+    int triviaCount = sizeof(trivia) / sizeof(trivia[0]);
+    int randomIndex = rand() % triviaCount;
+
+    cout << "\n🎶 Musical Fact 🎶\n";
+    cout << trivia[randomIndex] << "\n";
+    cout << "-----------------------------------\n";
+}
+
+void displayHeader() {
+    cout << "\n🎶 Welcome to Melody Mingle! 🎶\n";
+    cout << "Where every vibe finds its tune! 🌟\n";
+    cout << "-----------------------------------\n";
+}
+
+
