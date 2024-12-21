@@ -441,4 +441,106 @@ void displayHeader() {
     cout << "-----------------------------------\n";
 }
 
+int main() {
+    srand(static_cast<unsigned int>(time(0)));
+    Graph userJourneyGraph;
+    SongList happySongs(userJourneyGraph), sadSongs(userJourneyGraph), energySongs(userJourneyGraph);
+
+    happySongs.loadSongsFromFile("happy_songs.txt");
+    sadSongs.loadSongsFromFile("sad_songs.txt");
+    energySongs.loadSongsFromFile("energy_songs.txt");
+
+    displayHeader();
+
+    // Ask how the user is feeling
+    string mood;
+    cout << "How are you feeling today? (happy, sad, or energy): ";
+    cin >> mood;
+
+    // Display trending based on the mood
+    if (mood == "happy") {
+        happySongs.trendingSong();
+        happySongs.trendingArtist();
+    } else if (mood == "sad") {
+        sadSongs.trendingSong();
+        sadSongs.trendingArtist();
+    } else if (mood == "energy") {
+        energySongs.trendingSong();
+        energySongs.trendingArtist();
+    } else {
+        cout << "Invalid mood input. Please choose 'happy', 'sad', or 'energy'.\n";
+    }
+
+    int option;
+    do {
+        cout << "\nWhat would you like to do next? 🎵\n";
+        cout << "1. Rate your mood and get recommendations\n";
+        cout << "2. Search for songs\n";
+        cout << "3. Search for artists\n";
+        cout << "4. Display your music journey\n";
+        cout << "5. Reset music journey\n";
+        cout << "6. Musical fact of the day\n";
+        cout << "0. Exit\n";
+        cout << "-----------------------------------\n";
+        cout << "Enter your choice: ";
+        cin >> option;
+
+        switch (option) {
+            case 1: {
+                int moodRating;
+                cout << "\nRate your mood from 1 to 10 (or enter -1 for sad songs): ";
+                cin >> moodRating;
+                if (moodRating >= 8) {
+                    happySongs.recommendSongs(moodRating);
+                } else if (moodRating == -1) {
+                    sadSongs.recommendSongs(-1);
+                } else if (moodRating >= 3) {
+                    energySongs.recommendSongs(moodRating);
+                } else {
+                    cout << "❌ Invalid mood rating! Please enter a valid number.\n";
+                }
+                break;
+            }
+            case 2: {
+                string query;
+                cout << "\nEnter the name of a song: ";
+                cin.ignore();
+                getline(cin, query);
+                happySongs.searchSong(query);
+                sadSongs.searchSong(query);
+                energySongs.searchSong(query);
+                break;
+            }
+
+            case 3: {
+                string artist;
+                cout << "\nEnter the name of an artist: ";
+                cin.ignore();
+                getline(cin, artist);
+                happySongs.searchArtist(artist);
+                sadSongs.searchArtist(artist);
+                energySongs.searchArtist(artist);
+                break;
+            }
+
+            case 4:
+                userJourneyGraph.display();
+                break;
+            case 5:
+                userJourneyGraph.resetJourney();
+                cout << "\n🔄 Music journey has been reset.\n";
+                break;
+            case 6:
+                displayTrivia();
+                break;
+            case 0:
+                cout << "\nThank you for using Melody Mingle! 🎵\n";
+                break;
+            default:
+                cout << "\n❌ Invalid choice! Please try again.\n";
+        }
+    } while (option != 0);
+
+    return 0;
+}
 
